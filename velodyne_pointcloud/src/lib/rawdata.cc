@@ -92,20 +92,20 @@ namespace velodyne_rawdata
     // get path to angles.config file for this device
     config_.expected_factory_byte = (uint8_t) 0;
     if (laser_model == 0){
-      std::string pkgPath = ros::package::getPath("velodyne_pointcloud");
-      config_.calibrationFile = pkgPath + "/params/VLP16db.yaml";
+      // std::string pkgPath = ros::package::getPath("velodyne_pointcloud");
+      config_.calibrationFile = config_.calibrationFolder + "/VLP16db.yaml";
       config_.expected_factory_byte = (uint8_t) 0x22;
       ROS_INFO("Setting calibration file to: %s", config_.calibrationFile.c_str());
     }
     else if (laser_model == 1){
-      std::string pkgPath = ros::package::getPath("velodyne_pointcloud");
-      config_.calibrationFile = pkgPath + "/params/VeloView-VLP-32C.yaml";
+      // std::string pkgPath = ros::package::getPath("velodyne_pointcloud");
+      config_.calibrationFile =  config_.calibrationFolder + "/VeloView-VLP-32C.yaml";
       config_.expected_factory_byte = (uint8_t) 0x28;
       ROS_INFO("Setting calibration file to: %s", config_.calibrationFile.c_str());
     }
     else if (laser_model == 2){
-      std::string pkgPath = ros::package::getPath("velodyne_pointcloud");
-      config_.calibrationFile = pkgPath + "/params/32db.yaml";
+      // std::string pkgPath = ros::package::getPath("velodyne_pointcloud");
+      config_.calibrationFile =  config_.calibrationFolder + "/32db.yaml";
       config_.expected_factory_byte = (uint8_t) 0x21;
       ROS_INFO("Setting calibration file to: %s", config_.calibrationFile.c_str());
     }
@@ -148,16 +148,23 @@ namespace velodyne_rawdata
     // set laser parameters
     laser_model = 0;
     private_nh.getParam("/laser_model", laser_model);
-    if (!configureLaserParams(laser_model)){
+    // ROS_INFO_STREAM("private namespace: "<<private_nh.getNamespace());
+    std::string pkgPath = ros::package::getPath("velodyne_pointcloud");
+    config_.calibrationFolder = pkgPath + "/params";
+    private_nh.getParam("/calibration_folder", config_.calibrationFolder);
+    ROS_INFO_STREAM("calibrationFolder: "<<config_.calibrationFolder);
+    
+    if (!configureLaserParams(laser_model))
+    {
       if (!private_nh.getParam("calibration", config_.calibrationFile))
       {
         ROS_ERROR("No calibration angles specified! Using test values!");
-
         // have to use something: grab unit test version as a default
         std::string pkgPath = ros::package::getPath("velodyne_pointcloud");
         config_.calibrationFile = pkgPath + "/params/64e_utexas.yaml";
       }
     }
+    
 
     if (!private_nh.getParam("upward", upward))
     {

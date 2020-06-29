@@ -167,6 +167,7 @@ namespace velodyne_rawdata
 
     /** configuration parameters */
     typedef struct {
+      std::string calibrationFolder;
       std::string calibrationFile;     ///< calibration file name
       double max_range;                ///< maximum range to publish
       double min_range;                ///< minimum range to publish
